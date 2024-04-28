@@ -10,9 +10,11 @@ import (
 )
 
 type TwitchService struct {
-	client *twitch.Client
-	mu     sync.Mutex
+	client        *twitch.Client
+	mu            sync.Mutex
+	joinedStreams map[string]bool
 }
+
 type TwitchMessage struct {
 	Username string
 	Content  string
@@ -64,5 +66,8 @@ func (s *TwitchService) JoinStreamer(streamerName string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.client.Join(streamerName)
+	if _, ok := s.joinedStreams[streamerName]; !ok {
+		s.client.Join(streamerName)
+		s.joinedStreams[streamerName] = true
+	}
 }

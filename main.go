@@ -7,15 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 	"github.com/nathanroberts55/beatbattle/controllers"
-	"github.com/nathanroberts55/beatbattle/database"
 	"github.com/nathanroberts55/beatbattle/initializers"
 	"github.com/nathanroberts55/beatbattle/services"
 )
 
 func init() {
 	initializers.LoadEnvVariables()
-	database.ConnectToDatabase()
-	database.SyncDB()
 }
 
 type Listener struct {
@@ -91,9 +88,15 @@ func main() {
 
 	}))
 
+	twitchService := services.NewTwitchService()
+
 	// Start Twitch client in a separate goroutine
-	go services.ConnectToTwitch("pointcrow")
+	go twitchService.ConnectToTwitch()
+
+	// Later, you can join additional streamers without creating a new connection
+	twitchService.JoinStreamer("atrioc")
+	twitchService.JoinStreamer("hasabi")
 
 	// Start App
-	// app.Listen(":8080")
+	app.Listen(":8080")
 }

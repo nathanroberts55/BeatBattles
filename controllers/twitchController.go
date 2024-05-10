@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"html"
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
@@ -11,15 +12,16 @@ import (
 )
 
 func appendItem(msg *twitch.TwitchMessage) []byte {
+  body := fmt.Sprintf(`<a class="font-bold" href="https://twitch.tv/%s">%s</a>: %s`, msg.Username, msg.Username, html.EscapeString(msg.Content))
 	return []byte(fmt.Sprintf(`
 <turbo-stream action="append" target="messages">
   <template>
     <span>
-      %s: %s
+      %s
     </span>
   </template>
 </turbo-stream>
-  `, msg.Username, msg.Content))
+  `, body))
 }
 
 func newListener(streamer string, c *websocket.Conn) twitch.Listener {

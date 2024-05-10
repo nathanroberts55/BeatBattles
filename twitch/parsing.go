@@ -48,7 +48,5 @@ func (ts *TwitchService) sampleHandleMessage(message twitch.PrivateMessage) (*Tw
 		Channel:  message.Channel,
 	}
 
-	log.Println(TwitchMsg)
-
 	return TwitchMsg, nil
 }

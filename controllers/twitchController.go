@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
@@ -10,19 +10,24 @@ import (
 	"github.com/nathanroberts55/beatbattle/twitch"
 )
 
+func appendItem(msg *twitch.TwitchMessage) []byte {
+	return []byte(fmt.Sprintf(`
+<turbo-stream action="append" target="messages">
+  <template>
+    <span>
+      %s: %s
+    </span>
+  </template>
+</turbo-stream>
+  `, msg.Username, msg.Content))
+}
+
 func newListener(streamer string, c *websocket.Conn) twitch.Listener {
 	return twitch.Listener{
 		Id:       uuid.NewString(),
 		Streamer: streamer,
 		Callback: func(msg *twitch.TwitchMessage) {
-			data, err := json.Marshal(msg)
-
-			if err != nil {
-				log.Println("Failed to serialize FUCK", err)
-				return
-			}
-
-			if err = c.WriteMessage(websocket.TextMessage, []byte(data)); err != nil {
+			if err := c.WriteMessage(websocket.TextMessage, appendItem(msg)); err != nil {
 				log.Println("write:", err)
 			}
 		},
@@ -48,7 +53,6 @@ func WatchStream(app *common.App, c *websocket.Conn) {
 			log.Println("read:", err)
 			break
 		}
-		log.Printf("recv: %s", msg)
 
 		if err = c.WriteMessage(mt, msg); err != nil {
 			log.Println("write:", err)

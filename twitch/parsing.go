@@ -21,13 +21,8 @@ func extractSong(message string) string {
 }
 
 func (ts *TwitchService) handleMessage(message twitch.PrivateMessage) (*TwitchMessage, error) {
-	// if !strings.Contains(message.Message, "soundclo") {
-	// 	return nil, nil
-	// }
-
 	url := extractSong(message.Message)
 	if url == "" {
-		// log.Printf("SoundCloud URL: %s \n", url)
 		return nil, errors.New("no sound cloud link in message")
 	}
 

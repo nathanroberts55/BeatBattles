@@ -2,26 +2,26 @@ package controllers
 
 import (
 	"fmt"
-	"html"
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
 	"github.com/nathanroberts55/beatbattle/common"
+	"github.com/nathanroberts55/beatbattle/soundcloud"
 	"github.com/nathanroberts55/beatbattle/twitch"
 )
 
-func appendItem(msg *twitch.TwitchMessage) []byte {
-  body := fmt.Sprintf(`<a class="font-bold" href="https://twitch.tv/%s">%s</a>: %s`, msg.Username, msg.Username, html.EscapeString(msg.Content))
+func appendItem(embed string) []byte {
+
 	return []byte(fmt.Sprintf(`
 <turbo-stream action="append" target="messages">
   <template>
-    <span>
+  	<div class="w-10/12 m-2 rounded-xl drop-shadow-md">
       %s
-    </span>
+	</div>
   </template>
 </turbo-stream>
-  `, body))
+  `, embed))
 }
 
 func newListener(streamer string, c *websocket.Conn) twitch.Listener {
@@ -29,7 +29,12 @@ func newListener(streamer string, c *websocket.Conn) twitch.Listener {
 		Id:       uuid.NewString(),
 		Streamer: streamer,
 		Callback: func(msg *twitch.TwitchMessage) {
-			if err := c.WriteMessage(websocket.TextMessage, appendItem(msg)); err != nil {
+			embed, err := soundcloud.GetEmbed(msg.URL)
+			if err != nil {
+				log.Printf("Error getting embed for url: '%s' \n | Error:  %v \n", msg.URL, err)
+				return
+			}
+			if err := c.WriteMessage(websocket.TextMessage, appendItem(embed)); err != nil {
 				log.Println("write:", err)
 			}
 		},

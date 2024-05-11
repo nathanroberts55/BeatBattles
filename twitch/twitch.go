@@ -23,7 +23,7 @@ func New() *TwitchService {
 
 func (ts *TwitchService) Start() {
 	ts.client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		msg, err := ts.sampleHandleMessage(message)
+		msg, err := ts.handleMessage(message)
 		if err != nil {
 			log.Printf("Unable to Handle Message: %s", err)
 		}

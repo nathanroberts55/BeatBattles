@@ -1,28 +1,39 @@
 package controllers
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
 	"github.com/nathanroberts55/beatbattle/common"
+	"github.com/nathanroberts55/beatbattle/soundcloud"
 	"github.com/nathanroberts55/beatbattle/twitch"
 )
+
+func appendItem(embed string) []byte {
+	return []byte(fmt.Sprintf(`
+<turbo-stream action="append" target="messages">
+  <template>
+    <div class="m-2 rounded-xl drop-shadow-md">
+      %s
+    </div>
+  </template>
+</turbo-stream>
+  `, embed))
+}
 
 func newListener(streamer string, c *websocket.Conn) twitch.Listener {
 	return twitch.Listener{
 		Id:       uuid.NewString(),
 		Streamer: streamer,
 		Callback: func(msg *twitch.TwitchMessage) {
-			data, err := json.Marshal(msg)
-
+			embed, err := soundcloud.GetEmbed(msg.URL)
 			if err != nil {
-				log.Println("Failed to serialize FUCK", err)
+				log.Printf("Error getting embed for url: '%s' \n | Error:  %v \n", msg.URL, err)
 				return
 			}
-
-			if err = c.WriteMessage(websocket.TextMessage, []byte(data)); err != nil {
+			if err := c.WriteMessage(websocket.TextMessage, appendItem(embed)); err != nil {
 				log.Println("write:", err)
 			}
 		},
@@ -48,7 +59,6 @@ func WatchStream(app *common.App, c *websocket.Conn) {
 			log.Println("read:", err)
 			break
 		}
-		log.Printf("recv: %s", msg)
 
 		if err = c.WriteMessage(mt, msg); err != nil {
 			log.Println("write:", err)

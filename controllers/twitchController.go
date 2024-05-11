@@ -16,7 +16,7 @@ func appendItem(embed string) []byte {
 	return []byte(fmt.Sprintf(`
 <turbo-stream action="append" target="messages">
   <template>
-  	<div class="w-10/12 m-2 rounded-xl drop-shadow-md">
+  	<div class="w-full m-2 rounded-xl drop-shadow-md">
       %s
 	</div>
   </template>

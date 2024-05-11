@@ -13,13 +13,13 @@ import (
 
 func appendItem(embed string) []byte {
 	return []byte(fmt.Sprintf(`
-<turbo-stream action="append" target="messages">
-  <template>
-    <div class="m-2 rounded-xl drop-shadow-md">
-      %s
-    </div>
-  </template>
-</turbo-stream>
+		<turbo-stream action="append" target="messages">
+		<template>
+			<div class="m-2 rounded-xl drop-shadow-md">
+			%s
+			</div>
+		</template>
+		</turbo-stream>
   `, embed))
 }
 

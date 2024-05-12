@@ -1,7 +1,23 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+type indexProps struct {
+	Params
+	Year  string
+	Title string
+}
 
 func HomeIndex(c *fiber.Ctx) error {
-	return c.Render("index", fiber.Map{})
+	props := indexProps{
+		defaultParams,
+		fmt.Sprint(time.Now().Year()),
+		"Beat Battle",
+	}
+	return c.Render("index", props)
 }

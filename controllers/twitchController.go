@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"fmt"
+	"bytes"
 	"log"
+	"text/template"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
@@ -11,16 +12,21 @@ import (
 	"github.com/nathanroberts55/beatbattle/twitch"
 )
 
+type scProps struct {
+	IFrame string
+}
+
 func appendItem(embed string) []byte {
-	return []byte(fmt.Sprintf(`
-		<turbo-stream action="append" target="messages">
-		<template>
-			<div class="m-2 rounded-xl drop-shadow-md">
-			%s
-			</div>
-		</template>
-		</turbo-stream>
-  `, embed))
+	props := scProps{
+		IFrame: embed,
+	}
+	var data bytes.Buffer
+
+	tmpl, _ := template.ParseFiles("./views/partials/embedPlayer.html")
+
+	tmpl.Execute(&data, props)
+
+	return data.Bytes()
 }
 
 func newListener(streamer string, c *websocket.Conn) twitch.Listener {

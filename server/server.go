@@ -7,7 +7,8 @@ import (
 
 func New() *fiber.App {
 	app := fiber.New(fiber.Config{
-		Views: html.New("./views", ".html"),
+		Views:       html.New("./views", ".html"),
+		ViewsLayout: "layouts/base",
 	})
 
 	return app

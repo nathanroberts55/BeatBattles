@@ -14,7 +14,7 @@ type scData struct {
 	ProviderName string  `json:"provider_name"`
 	ProviderURL  string  `json:"provider_url"`
 	Height       int     `json:"height"`
-	Width        int     `json:"width"`
+	Width        string  `json:"width"`
 	Title        string  `json:"title"`
 	Description  string  `json:"description"`
 	ThumbnailURL string  `json:"thumbnail_url"`
@@ -26,7 +26,7 @@ type scData struct {
 func GetEmbed(link string) (string, error) {
 	client := &http.Client{}
 	scUrl := url.QueryEscape(link)
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://soundcloud.com/oembed?format=json&url=%s&maxheight=256px&maxwidth=256px", scUrl), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://soundcloud.com/oembed?format=json&url=%s", scUrl), nil)
 	if err != nil {
 		return "", err
 	}

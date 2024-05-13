@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"errors"
+	"log"
 	"regexp"
 
 	"github.com/gempir/go-twitch-irc/v4"
@@ -24,6 +25,8 @@ func (ts *TwitchService) handleMessage(message twitch.PrivateMessage) (*TwitchMe
 	url := extractSong(message.Message)
 	if url == "" {
 		return nil, errors.New("no sound cloud link in message")
+	} else {
+		log.Printf("Retrieved: %s\n", url)
 	}
 
 	TwitchMsg := &TwitchMessage{

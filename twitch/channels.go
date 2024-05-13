@@ -1,5 +1,7 @@
 package twitch
 
+import "log"
+
 type Listener struct {
 	Id       string
 	Streamer string
@@ -16,6 +18,7 @@ func (ts *TwitchService) JoinStreamer(listener Listener) {
 	}
 
 	ts.Streams[listener.Streamer] = append(channels, listener)
+	log.Printf("New listener %s for %s\n", listener.Id, listener.Streamer)
 }
 
 func (ts *TwitchService) LeaveStreamer(listener Listener) {

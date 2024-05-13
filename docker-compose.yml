@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    env_file:
+        - .env.docker
+  redis:
+    image: redis:7.2.4
+    ports:
+     - 6379:6379
+

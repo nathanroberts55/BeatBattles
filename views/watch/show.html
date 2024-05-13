@@ -1,2 +1,60 @@
-<div id="messages" class="container"></div>
+<main data-controller="songs" class="my-3 d-flex flex-row justify-content-center h-100">
+   <div id="messages" data-songs-target="container" class="container overflow-scroll bg-light border rounded p-3 shadow d-inline-block"></div>
+</main>
+<style>
+#messages {
+  height: 90vh;
+  max-height: 90vh;
+}
+</style>
 
+<script type="module">
+  import { Controller } from "https://unpkg.com/@hotwired/stimulus@3.2.2/dist/stimulus.js"
+
+
+  window.Stimulus.register("songs", class extends Controller {
+    static targets = [ "container" ]
+
+    connect() {
+      this.socket = this.#newSocket()
+      window.Turbo.session.connectStreamSource(this.socket)
+      this.socket.addEventListener("open", this.#socketConnected.bind(this));
+    }
+
+    disconnect() {
+      this.socket.close()
+    }
+
+    #socketConnected() {
+      const observer = new IntersectionObserver(this.#pullSongs.bind(this), {
+        root: null,        // Use viewport as the root
+        rootMargin: '0px', // No margin
+        threshold: 1.0     // Trigger when 100% visible
+      });
+
+      observer.observe(this.containerTarget);
+      const cb = setInterval(() => {
+        if (this.#isScrollable()) {
+          clearInterval(cb)
+          return
+        }
+
+        this.#pullSongs()
+      }, 5_000)
+    }
+
+    #pullSongs() {
+      console.debug('Pulling...')
+      return this.socket.send("PULL")
+    }
+
+    #isScrollable() {
+      return this.containerTarget.scrollHeight > this.containerTarget.clientHeight
+    }
+
+    #newSocket() {
+      const proto = window.location.protocol === "http:" ? "ws" : "wss"
+      return new WebSocket(`${proto}://${window.location.host}/ws/{{.Streamer}}`);
+    }
+  })
+</script>

@@ -12,6 +12,8 @@ func RegisterRoutes(a *common.App) {
 
 	// Routes
 	app.Get("/", controllers.HomeIndex)
+	app.Get("/watch", controllers.WatchIndex)
+	app.Get("/watch/:streamer", controllers.WatchShow)
 
 	// Configure App
 	app.Static("/", "./public")

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "layouts/_head" .}}
+    <title>Watching {{ .Streamer }}</title>
+</head>
+
+<body>
+    {{ template "layouts/_navbar" .}}
+    <div class="container-fluid">
+      {{ embed }}
+    </div>
+    {{ template "layouts/_footer" .}}
+    <!-- Turbo -->
+    <script type="module">
+        import * as Turbo from "https://unpkg.com/@hotwired/turbo@8.0.4/dist/turbo.es2017-esm.js"
+        const socket = new WebSocket("ws://localhost:8080/ws/{{.Streamer}}");
+        Turbo.session.connectStreamSource(socket)
+    </script>
+</body>
+</html>
+

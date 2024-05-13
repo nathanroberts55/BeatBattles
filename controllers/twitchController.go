@@ -22,7 +22,7 @@ func appendItem(embed string) []byte {
 	}
 	var data bytes.Buffer
 
-	tmpl, _ := template.ParseFiles("./views/partials/embedPlayer.html")
+	tmpl, _ := template.ParseFiles("./views/watch/_embedPlayer.html")
 
 	tmpl.Execute(&data, props)
 
@@ -39,6 +39,7 @@ func newListener(streamer string, c *websocket.Conn) twitch.Listener {
 				log.Printf("Error getting embed for url: '%s' \n | Error:  %v \n", msg.URL, err)
 				return
 			}
+
 			if err := c.WriteMessage(websocket.TextMessage, appendItem(embed)); err != nil {
 				log.Println("write:", err)
 			}

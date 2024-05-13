@@ -26,6 +26,7 @@ func (ts *TwitchService) Start() {
 		msg, err := ts.handleMessage(message)
 		if err != nil {
 			log.Printf("Unable to Handle Message: %s", err)
+			return
 		}
 
 		if listeners, isOK := ts.Streams[message.Channel]; isOK {

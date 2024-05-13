@@ -35,13 +35,3 @@ func (ts *TwitchService) handleMessage(message twitch.PrivateMessage) (*TwitchMe
 
 	return TwitchMsg, nil
 }
-
-func (ts *TwitchService) sampleHandleMessage(message twitch.PrivateMessage) (*TwitchMessage, error) {
-	TwitchMsg := &TwitchMessage{
-		Username: message.User.Name,
-		Content:  message.Message,
-		Channel:  message.Channel,
-	}
-
-	return TwitchMsg, nil
-}

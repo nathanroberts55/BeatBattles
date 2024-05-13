@@ -1,14 +1,26 @@
 package twitch
 
-import "log"
+import (
+	"github.com/google/uuid"
+)
+
+type listenerCallback func(*TwitchMessage)
 
 type Listener struct {
 	Id       string
 	Streamer string
-	Callback func(*TwitchMessage)
+	Callback listenerCallback
 }
 
-func (ts *TwitchService) JoinStreamer(listener Listener) {
+func NewListener(streamer string, callback listenerCallback) *Listener {
+	return &Listener{
+		Id:       uuid.NewString(),
+		Streamer: streamer,
+		Callback: callback,
+	}
+}
+
+func (ts *TwitchService) JoinStreamer(listener *Listener) {
 	ts.StreamsMutex.Lock()
 	defer ts.StreamsMutex.Unlock()
 	channels := ts.Streams[listener.Streamer]
@@ -18,10 +30,9 @@ func (ts *TwitchService) JoinStreamer(listener Listener) {
 	}
 
 	ts.Streams[listener.Streamer] = append(channels, listener)
-	log.Printf("New listener %s for %s\n", listener.Id, listener.Streamer)
 }
 
-func (ts *TwitchService) LeaveStreamer(listener Listener) {
+func (ts *TwitchService) LeaveStreamer(listener *Listener) {
 	ts.StreamsMutex.Lock()
 	defer ts.StreamsMutex.Unlock()
 	listeners, isOK := ts.Streams[listener.Streamer]

@@ -9,21 +9,20 @@ import (
 
 type TwitchService struct {
 	client       *twitch.Client
-	Streams      map[string][]Listener
+	Streams      map[string][]*Listener
 	StreamsMutex sync.Mutex
 }
 
 func New() *TwitchService {
 	return &TwitchService{
 		client:       twitch.NewAnonymousClient(),
-		Streams:      make(map[string][]Listener),
+		Streams:      make(map[string][]*Listener),
 		StreamsMutex: sync.Mutex{},
 	}
 }
 
 func (ts *TwitchService) Start() {
 	ts.client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		log.Printf("#%s: received message\n", message.Channel)
 		msg, err := ts.handleMessage(message)
 		if err != nil {
 			log.Printf("Unable to Handle Message: %s", err)

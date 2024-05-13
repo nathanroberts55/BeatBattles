@@ -5,15 +5,28 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/nathanroberts55/beatbattle/common"
 	"github.com/nathanroberts55/beatbattle/controllers"
+	"github.com/nathanroberts55/beatbattle/controllers/watch"
 )
+
+func buildHandler(app *common.App, controller func(*common.Ctx) error) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return controller(&common.Ctx{
+			c,
+			app,
+		})
+	}
+}
 
 func RegisterRoutes(a *common.App) {
 	app := a.Server
 
 	// Routes
-	app.Get("/", controllers.HomeIndex)
-	app.Get("/watch", controllers.WatchIndex)
-	app.Get("/watch/:streamer", controllers.WatchShow)
+	app.Get("/", buildHandler(a, controllers.HomeIndex))
+	app.Get("/watch", buildHandler(a, watch.Index))
+	app.Get("/watch/:streamer", buildHandler(a, watch.Show))
+	app.Get("/ws/watch/:streamer", websocket.New(func(c *websocket.Conn) {
+		watch.Watch(a, c)
+	}))
 
 	// Configure App
 	app.Static("/", "./public")
@@ -27,8 +40,4 @@ func RegisterRoutes(a *common.App) {
 		}
 		return fiber.ErrUpgradeRequired
 	})
-
-	app.Get("/ws/:id", websocket.New(func(c *websocket.Conn) {
-		controllers.WatchStream(a, c)
-	}))
 }

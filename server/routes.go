@@ -24,7 +24,7 @@ func RegisterRoutes(a *common.App) {
 	app.Get("/", buildHandler(a, controllers.HomeIndex))
 	app.Get("/watch", buildHandler(a, watch.Index))
 	app.Get("/watch/:streamer", buildHandler(a, watch.Show))
-	app.Get("/ws/watch/:streamer", websocket.New(func(c *websocket.Conn) {
+	app.Get("/watch/:streamer/ws", websocket.New(func(c *websocket.Conn) {
 		watch.Watch(a, c)
 	}))
 

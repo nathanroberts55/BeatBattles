@@ -1,4 +1,4 @@
-<main data-controller="songs" class="my-3 d-flex flex-row justify-content-center h-100">
+<main data-controller="songs" data-songs-streamer-value="{{ .Streamer }}" class="my-3 d-flex flex-row justify-content-center h-100">
    <div id="messages" data-songs-target="container" class="container overflow-scroll bg-light border rounded p-3 shadow d-inline-block"></div>
 </main>
 <style>
@@ -14,6 +14,10 @@
 
   window.Stimulus.register("songs", class extends Controller {
     static targets = [ "container" ]
+
+    static values = {
+      streamer: String
+    }
 
     connect() {
       this.socket = this.#newSocket()
@@ -54,7 +58,7 @@
 
     #newSocket() {
       const proto = window.location.protocol === "http:" ? "ws" : "wss"
-      return new WebSocket(`${proto}://${window.location.host}/ws/{{.Streamer}}`);
+      return new WebSocket(`${proto}://${window.location.host}/watch/${this.streamerValue}/ws`);
     }
   })
 </script>

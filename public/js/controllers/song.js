@@ -32,7 +32,7 @@ export default class extends Controller {
     observer.observe(this.containerTarget);
     this.pullLoop = setInterval(() => {
       if (this.#isScrollable()) {
-        clearInterval(cb)
+        clearInterval(this.pullLoop)
         return
       }
 

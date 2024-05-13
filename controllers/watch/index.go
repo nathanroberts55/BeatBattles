@@ -40,7 +40,6 @@ func Index(c *common.Ctx) error {
 	if err != nil {
 		log.Printf("Failed to get recent streamers\n%v\n", err)
 	}
-	log.Printf("%v\n", recent)
 
 	return c.Render("watch/index", indexProps{
 		controllers.DefaultParams,

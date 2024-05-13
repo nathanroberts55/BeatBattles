@@ -22,7 +22,7 @@ func appendItem(embed string) []byte {
 	}
 	var data bytes.Buffer
 
-	tmpl, _ := template.ParseFiles("./views/partials/embedPlayer.html")
+	tmpl, _ := template.ParseFiles("./views/watch/_embedPlayer.html")
 
 	tmpl.Execute(&data, props)
 

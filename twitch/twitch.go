@@ -9,14 +9,14 @@ import (
 
 type TwitchService struct {
 	client       *twitch.Client
-	Streams      map[string][]Listener
+	Streams      map[string][]*Listener
 	StreamsMutex sync.Mutex
 }
 
 func New() *TwitchService {
 	return &TwitchService{
 		client:       twitch.NewAnonymousClient(),
-		Streams:      make(map[string][]Listener),
+		Streams:      make(map[string][]*Listener),
 		StreamsMutex: sync.Mutex{},
 	}
 }

@@ -1,14 +1,13 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import "github.com/nathanroberts55/beatbattle/common"
 
 type indexProps struct {
 	Params
 }
 
-func HomeIndex(c *fiber.Ctx) error {
-	props := indexProps{
-		defaultParams,
-	}
-	return c.Render("index", props)
+func HomeIndex(c *common.Ctx) error {
+	return c.Render("index", indexProps{
+		DefaultParams,
+	})
 }

@@ -1,4 +1,19 @@
-<form method="get" url="/watch">
-  <input type="text" name="streamer" placeholder="twitchgaming">
-  <button type="submit" class="btn btn-primary">Watch</button>
-</form>
+<div class="d-flex flex-column gap-3 w-25 mx-auto mt-5">
+  <form method="get" url="/watch" class="container d-flex flex-column gap-3 bg-light border rounded p-3 shadow">
+    <div class="col">
+      <label for="streamer" class="form-label">Streamer</label>
+      <input type="text" name="streamer" placeholder="twitchgaming" class="form-control">
+    </div>
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary w-2">Watch</button>
+    </div>
+  </form>
+  {{ if .RecentStreamers }}
+    <div class="container d-flex flex-column gap-3 bg-light border rounded p-3 shadow">
+      <span>Continue</span>
+      {{ range .RecentStreamers }}
+        <a href="/watch/{{ . }}">{{ . }}</a>
+      {{ end }}
+    </div>
+  {{ end }}
+</div>

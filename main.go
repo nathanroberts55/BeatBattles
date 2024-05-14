@@ -13,8 +13,9 @@ func init() {
 
 func main() {
 	app := common.App{
-		Server: server.New(),
-		Twitch: twitch.New(),
+		Server:   server.New(),
+		Twitch:   twitch.New(),
+		Sessions: server.NewSessionStore(),
 	}
 
 	// Start Twitch client in a separate goroutine
@@ -22,5 +23,8 @@ func main() {
 
 	// Setup App
 	server.RegisterRoutes(&app)
-	app.Server.Listen(":8080")
+	err := app.Server.Listen(":8080")
+	if err != nil {
+		panic(err)
+	}
 }

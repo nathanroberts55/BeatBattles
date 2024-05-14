@@ -9,7 +9,7 @@ type Params struct {
 	MenuItems []MenuItem
 }
 
-var defaultParams = Params{
+var DefaultParams = Params{
 	[]MenuItem{
 		{"/", "Home"},
 		{"/watch", "Watch"},

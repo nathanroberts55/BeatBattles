@@ -2,29 +2,31 @@
 	"name": "beatbattles",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "esbuild.js",
+	"directories": {
+		"doc": "docs"
+	},
 	"type": "module",
 	"scripts": {
-		"dev": "node esbuild.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "node esbuild.js"
 	},
-	"keywords": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nathanroberts55/BeatBattles.git"
+	},
 	"author": "",
 	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/nathanroberts55/BeatBattles/issues"
+	},
+	"homepage": "https://github.com/nathanroberts55/BeatBattles#readme",
 	"dependencies": {
-		"autoprefixer": "^10.4.19",
-		"bootstrap": "^5.3.3",
-		"esbuild-sass-plugin": "^3.2.0",
-		"postcss": "^8.4.38",
-		"react": "^18.2.0",
-		"react-bootstrap": "^2.10.2",
-		"react-dom": "^18.2.0",
-		"react-router-dom": "^6.22.3",
-		"tmi.js": "^1.8.5"
+		"bootstrap": "^5.3.3"
 	},
 	"devDependencies": {
-		"@types/react": "^18.2.73",
-		"@types/react-dom": "^18.2.23",
-		"esbuild": "^0.20.2"
+		"autoprefixer": "^10.4.19",
+		"esbuild-sass-plugin": "^3.2.0",
+		"postcss": "^8.4.38"
 	}
 }

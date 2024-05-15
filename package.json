@@ -9,7 +9,8 @@
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "node esbuild.js"
+		"build": "node esbuild.js",
+		"dev": "node esbuild_dev.js"
 	},
 	"repository": {
 		"type": "git",

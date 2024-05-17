@@ -50,6 +50,8 @@ func newListener(streamer string, bucket *cache.Bucket) *twitch.Listener {
 
 			if err = bucket.Push(sc); err != nil {
 				log.Printf("Failed to push song to Redis.\n%v\n", err)
+			} else {
+				log.Printf("Pushed song to Redis: %s\n", sc.Id)
 			}
 		},
 	)
@@ -73,6 +75,9 @@ func subscribe(app *common.App, c *websocket.Conn) *cache.Bucket {
 var pullMsg = []byte("PULL")
 
 func Watch(app *common.App, c *websocket.Conn) {
+	streamer := c.Params("streamer")
+	log.Printf("New connection: %s\n", streamer)
+
 	var (
 		err    error
 		mt     int
@@ -81,6 +86,10 @@ func Watch(app *common.App, c *websocket.Conn) {
 		bucket = subscribe(app, c)
 	)
 
+	reset := func() {
+		resp = [][]byte{}
+	}
+
 	for {
 		if mt, msg, err = c.ReadMessage(); err != nil {
 			log.Println("read:", err)
@@ -88,9 +97,20 @@ func Watch(app *common.App, c *websocket.Conn) {
 		}
 
 		if reflect.DeepEqual(msg, pullMsg) {
-			for _, v := range bucket.PullUnique(20) {
+			items, err := bucket.PullUnique(20)
+			if err != nil {
+				log.Printf("Failed to pull items from Redis.\n%v\n", err)
+				continue
+			}
+
+			for _, v := range items {
+				log.Printf("%s: pulled %s\n", streamer, v.Id)
 				resp = append(resp, renderEmbed(v.Html))
 			}
+		}
+
+		if len(resp) == 0 {
+			log.Println("No items pulled.")
 		}
 
 		for _, v := range resp {
@@ -99,5 +119,7 @@ func Watch(app *common.App, c *websocket.Conn) {
 				break
 			}
 		}
+
+		reset()
 	}
 }

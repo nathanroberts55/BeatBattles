@@ -18,40 +18,37 @@ type scProps struct {
 	IFrame string
 }
 
-func renderEmbed(embed string) (out []byte, err error) {
+func renderEmbed(embed string) (out []byte) {
 	tmpl, err := template.ParseFiles("./views/watch/_embedPlayer.html")
 	if err != nil {
-		return out, err
+		log.Printf("Failed to parse template.\n%v\n", err)
+		return out
 	}
 
 	var data bytes.Buffer
 	err = tmpl.Execute(&data, scProps{
 		IFrame: embed,
 	})
-	if err == nil {
-		out = data.Bytes()
+
+	if err != nil {
+		log.Printf("Failed to execute template.\n%v\n", err)
+		return out
 	}
 
-	return out, err
+	return data.Bytes()
 }
 
 func newListener(streamer string, bucket *cache.Bucket) *twitch.Listener {
 	return twitch.NewListener(
 		streamer,
 		func(msg *twitch.TwitchMessage) {
-			embed, err := soundcloud.GetEmbed(msg.URL)
+			sc, err := soundcloud.GetEmbed(msg.URL)
 			if err != nil {
 				log.Printf("Failed to get oEmbed for url: '%s'\n%v\n", msg.URL, err)
 				return
 			}
 
-			render, err := renderEmbed(embed)
-			if err != nil {
-				log.Printf("Failed to render embed.\n%v\n", err)
-				return
-			}
-
-			if err = bucket.Push(render); err != nil {
+			if err = bucket.Push(sc); err != nil {
 				log.Printf("Failed to push song to Redis.\n%v\n", err)
 			}
 		},
@@ -91,7 +88,9 @@ func Watch(app *common.App, c *websocket.Conn) {
 		}
 
 		if reflect.DeepEqual(msg, pullMsg) {
-			resp = bucket.PullFromCursor(20)
+			for _, v := range bucket.PullUnique(20) {
+				resp = append(resp, renderEmbed(v.Html))
+			}
 		}
 
 		for _, v := range resp {

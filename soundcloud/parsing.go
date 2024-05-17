@@ -23,31 +23,39 @@ type scData struct {
 	AuthorURL    string  `json:"author_url"`
 }
 
-func GetEmbed(link string) (string, error) {
+type SoundcloudItem struct {
+	Id   string `json:"id"`
+	Html string `json:"html"`
+}
+
+func GetEmbed(link string) (*SoundcloudItem, error) {
 	client := &http.Client{}
 	scUrl := url.QueryEscape(link)
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://soundcloud.com/oembed?format=json&url=%s", scUrl), nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	resp, err := client.Do(req)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	var data scData
 	err = json.Unmarshal(body, &data)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return data.HTML, nil
+	return &SoundcloudItem{
+		Id:   fmt.Sprintf("%s/%s", data.AuthorName, data.Title),
+		Html: data.HTML,
+	}, nil
 }

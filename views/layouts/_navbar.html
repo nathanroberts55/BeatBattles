@@ -1,25 +1,21 @@
-<nav class="container-lg navbar navbar-expand-lg">
-    <a class="navbar-brand fw-bold fst-italic fs-5" href="/">JamSessions</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
-                <div class="vr d-none d-lg-flex h-100 mx-lg-2"></div>
-                <hr class="d-lg-none my-2">
-            </li>
-            {{ range .MenuItems }}
-            <li class="nav-item active">
-                <a class="nav-link" href="{{.Href}}">{{.Name}}</a>
-            </li>
-            {{ end }}
-        </ul>
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-items">
-                <a id="colormode-toggle" class="nav-link" href=""><i class="fa-solid fa-circle-half-stroke"></i></a>
+<div class="navbar bg-base-100 top-0">
+    <div class="flex-1">
+        <a href="/" class="btn btn-ghost text-xl italic">JamSessions</a>
+    </div>
+    <div class="flex-none">
+        <ul class="menu menu-horizontal px-1">
+            <li><a href="/watch">Listen</a></li>
+            <li>
+                <details>
+                    <summary>
+                        More
+                    </summary>
+                    <ul class="p-2 bg-base-100 rounded-t-none">
+                        <li><a>About</a></li>
+                        <li><a>Contact</a></li>
+                    </ul>
+                </details>
             </li>
         </ul>
     </div>
-</nav>
+</div>

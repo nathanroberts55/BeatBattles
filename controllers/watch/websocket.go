@@ -18,41 +18,40 @@ type scProps struct {
 	IFrame string
 }
 
-func renderEmbed(embed string) (out []byte, err error) {
+func renderEmbed(embed string) (out []byte) {
 	tmpl, err := template.ParseFiles("./views/watch/_embedPlayer.html")
 	if err != nil {
-		return out, err
+		log.Printf("Failed to parse template.\n%v\n", err)
+		return out
 	}
 
 	var data bytes.Buffer
 	err = tmpl.Execute(&data, scProps{
 		IFrame: embed,
 	})
-	if err == nil {
-		out = data.Bytes()
+
+	if err != nil {
+		log.Printf("Failed to execute template.\n%v\n", err)
+		return out
 	}
 
-	return out, err
+	return data.Bytes()
 }
 
 func newListener(streamer string, bucket *cache.Bucket) *twitch.Listener {
 	return twitch.NewListener(
 		streamer,
 		func(msg *twitch.TwitchMessage) {
-			embed, err := soundcloud.GetEmbed(msg.URL)
+			sc, err := soundcloud.GetEmbed(msg.URL)
 			if err != nil {
 				log.Printf("Failed to get oEmbed for url: '%s'\n%v\n", msg.URL, err)
 				return
 			}
 
-			render, err := renderEmbed(embed)
-			if err != nil {
-				log.Printf("Failed to render embed.\n%v\n", err)
-				return
-			}
-
-			if err = bucket.Push(render); err != nil {
+			if err = bucket.Push(sc); err != nil {
 				log.Printf("Failed to push song to Redis.\n%v\n", err)
+			} else {
+				log.Printf("Pushed song to Redis: %s\n", sc.Id)
 			}
 		},
 	)
@@ -76,6 +75,9 @@ func subscribe(app *common.App, c *websocket.Conn) *cache.Bucket {
 var pullMsg = []byte("PULL")
 
 func Watch(app *common.App, c *websocket.Conn) {
+	streamer := c.Params("streamer")
+	log.Printf("New connection: %s\n", streamer)
+
 	var (
 		err    error
 		mt     int
@@ -84,6 +86,10 @@ func Watch(app *common.App, c *websocket.Conn) {
 		bucket = subscribe(app, c)
 	)
 
+	reset := func() {
+		resp = [][]byte{}
+	}
+
 	for {
 		if mt, msg, err = c.ReadMessage(); err != nil {
 			log.Println("read:", err)
@@ -91,7 +97,20 @@ func Watch(app *common.App, c *websocket.Conn) {
 		}
 
 		if reflect.DeepEqual(msg, pullMsg) {
-			resp = bucket.PullFromCursor(20)
+			items, err := bucket.PullUnique(20)
+			if err != nil {
+				log.Printf("Failed to pull items from Redis.\n%v\n", err)
+				continue
+			}
+
+			for _, v := range items {
+				log.Printf("%s: pulled %s\n", streamer, v.Id)
+				resp = append(resp, renderEmbed(v.Html))
+			}
+		}
+
+		if len(resp) == 0 {
+			log.Println("No items pulled.")
 		}
 
 		for _, v := range resp {
@@ -100,5 +119,7 @@ func Watch(app *common.App, c *websocket.Conn) {
 				break
 			}
 		}
+
+		reset()
 	}
 }

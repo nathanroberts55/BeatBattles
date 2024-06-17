@@ -13,9 +13,8 @@ func init() {
 
 func main() {
 	app := common.App{
-		Server:   server.New(),
-		Twitch:   twitch.New(),
-		Sessions: server.NewSessionStore(),
+		Server: server.New(),
+		Twitch: twitch.New(),
 	}
 
 	// Start Twitch client in a separate goroutine

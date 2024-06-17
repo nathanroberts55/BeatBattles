@@ -2,16 +2,16 @@
 <html lang="en">
 
 <head>
-    {{ template "layouts/_head" .}}
-    <title>Watching {{ .Streamer }}</title>
+  {{ template "layouts/_head" .}}
+  <title>Watching {{ .Streamer }}</title>
 </head>
 
-<body>
-    {{ template "layouts/_navbar" .}}
-    <div class="container-fluid">
-      {{ embed }}
-    </div>
-    {{ template "layouts/_footer" .}}
+<body class="flex flex-col h-screen">
+  {{ template "layouts/_navbar" .}}
+  <main class="container mx-auto flex grow">
+    {{ embed }}
+  </main>
+  {{ template "layouts/_footer" .}}
 </body>
-</html>
 
+</html>

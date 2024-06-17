@@ -1,46 +1,116 @@
 package cache
 
 import (
+	"encoding/json"
+
+	"github.com/nathanroberts55/beatbattle/soundcloud"
 	"github.com/redis/go-redis/v9"
 )
 
 type Bucket struct {
-	client   *redis.Client
-	streamer string
-	cursor   int64
+	client      *redis.Client
+	streamer    string
+	cursor      int64
+	startCursor int64
 }
 
 func NewBucket(streamer string) *Bucket {
-	return &Bucket{
+	bucket := &Bucket{
 		client:   redisClient(),
 		streamer: streamer,
 	}
+	latest := bucket.client.LLen(ctx, bucket.streamer).Val()
+	bucket.startCursor = latest
+	bucket.cursor = latest
+
+	return bucket
 }
 
-func (bucket *Bucket) Pull(cursor, limit int64) [][]byte {
-	data := bucket.client.LRange(ctx, bucket.streamer, cursor, cursor+limit)
-	var result [][]byte
+func (bucket *Bucket) lrange(start, end int64) (result []*soundcloud.SoundcloudItem, err error) {
+	res := bucket.client.LRange(ctx, bucket.streamer, start, end)
+	if err = res.Err(); err != nil {
+		return result, err
+	}
 
-	for _, v := range data.Val() {
-		result = append(result, []byte(v))
+	for _, v := range res.Val() {
+		var data soundcloud.SoundcloudItem
+		err = json.Unmarshal([]byte(v), &data)
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, &data)
+	}
+
+	return result, nil
+}
+
+func (bucket *Bucket) PullFromCursor(limit int64) (result []*soundcloud.SoundcloudItem, err error) {
+	result, err = bucket.lrange(bucket.cursor, bucket.cursor+limit-1)
+	if err != nil {
+		return result, err
 	}
 
 	bucket.cursor += int64(len(result))
-	return result
+	return result, err
 }
 
-func (bucket *Bucket) PullFromCursor(limit int64) [][]byte {
-	if bucket.cursor == 0 {
-		bucket.cursor = bucket.GetLatestCursor()
+func (bucket *Bucket) Push(sc *soundcloud.SoundcloudItem) error {
+	data, err := json.Marshal(sc)
+	if err != nil {
+		return err
 	}
 
-	return bucket.Pull(bucket.cursor, limit)
+	return bucket.client.RPush(ctx, bucket.streamer, data).Err()
 }
 
-func (bucket *Bucket) GetLatestCursor() int64 {
-	return bucket.client.LLen(ctx, bucket.streamer).Val()
+func max(a, b int64) int64 {
+	if b > a {
+		return b
+	}
+	if a > b {
+		return a
+	}
+
+	return a
 }
 
-func (bucket *Bucket) Push(embed []byte) error {
-	return bucket.client.LPush(ctx, bucket.streamer, embed).Err()
+func (bucket *Bucket) getThusFar() ([]*soundcloud.SoundcloudItem, error) {
+	if bucket.cursor == 0 {
+		return []*soundcloud.SoundcloudItem{}, nil
+	}
+
+	return bucket.lrange(bucket.startCursor, max(bucket.cursor-1, 0))
+}
+
+func (bucket *Bucket) PullUnique(limit int64) (result []*soundcloud.SoundcloudItem, err error) {
+	thusFar, err := bucket.getThusFar()
+	if err != nil {
+		return result, err
+	}
+
+	for {
+		items, err := bucket.PullFromCursor(limit)
+		if err != nil {
+			return result, err
+		}
+
+	outter:
+		for _, v := range items {
+			for _, u := range thusFar {
+				if v.Id == u.Id {
+					continue outter
+				}
+			}
+
+			result = append(result, v)
+		}
+
+		limit32 := int(limit)
+		if len(result) == limit32 || len(items) < limit32 {
+			break
+		}
+	}
+
+	return result, nil
 }

@@ -1,6 +1,8 @@
 package twitch
 
 import (
+	"log"
+
 	"github.com/google/uuid"
 )
 
@@ -26,6 +28,7 @@ func (ts *TwitchService) JoinStreamer(listener *Listener) {
 	channels := ts.Streams[listener.Streamer]
 
 	if len(channels) == 0 {
+		log.Printf("Joining Streamer: %s\n", listener.Streamer)
 		ts.client.Join(listener.Streamer)
 	}
 
@@ -48,6 +51,7 @@ func (ts *TwitchService) LeaveStreamer(listener *Listener) {
 	}
 
 	if len(ts.Streams[listener.Streamer]) == 0 {
+		log.Printf("Leaving Streamer: %s\n", listener.Streamer)
 		ts.client.Depart(listener.Streamer)
 	}
 }

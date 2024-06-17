@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="en">
 
 <head>
     {{ template "layouts/_head" .}}
     <title>JamSessions</title>
 </head>
 
-<body>
+<body class="flex flex-col h-screen">
     {{ template "layouts/_navbar" .}}
-    <div class="container-fluid">
+    <main class="container mx-auto flex grow">
         {{ embed }}
-    </div>
+    </main>
     {{ template "layouts/_footer" .}}
 </body>
 

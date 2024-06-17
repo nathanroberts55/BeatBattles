@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"errors"
+	"log"
 	"regexp"
 
 	"github.com/gempir/go-twitch-irc/v4"
@@ -26,6 +27,7 @@ func (ts *TwitchService) handleMessage(message twitch.PrivateMessage) (*TwitchMe
 		return nil, errors.New("no sound cloud link in message")
 	}
 
+	log.Printf("Extacted URL: %s\n", url)
 	TwitchMsg := &TwitchMessage{
 		Username: message.User.Name,
 		Content:  message.Message,

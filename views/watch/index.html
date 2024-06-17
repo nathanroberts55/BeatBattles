@@ -1,19 +1,30 @@
-<div class="d-flex flex-column gap-3 w-25 mx-auto mt-5">
-  <form method="get" url="/watch" class="container d-flex flex-column gap-3 border rounded p-3 shadow">
-    <div class="col">
-      <label for="streamer" class="form-label">Streamer</label>
-      <input type="text" name="streamer" placeholder="twitchgaming" class="form-control">
-    </div>
-    <div class="d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary w-2">Watch</button>
+<div class="flex flex-col mx-auto justify-center items-center">
+  <form method="GET" url="/watch">
+    <div class="card w-96 bg-neutral text-neutral-content">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-2xl mb-4">Tune In!</h2>
+        <p class="font-bold">Enter Streamer Name</p>
+        <label for="streamerName" class="input input-bordered flex items-center gap-2 mb-4 w-full max-w-xs">
+          <input type="text" name="streamer" placeholder="JustinTV" class="grow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
+            <path fill-rule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clip-rule="evenodd" />
+          </svg>
+        </label>
+        <div class="card-actions justify-end">
+          <button type="submit" class="btn btn-secondary">Join</button>
+        </div>
+      </div>
+      {{ if .RecentStreamers }}
+      <div class="flex flex-col mb-4 mx-auto gap-y-2 items-center">
+        {{ range .RecentStreamers }}
+        <a class="btn btn-primary" href="/watch/{{ . }}">
+          <span>Continue</span>{{ . }}
+        </a>
+        {{ end }}
+      </div>
+      {{ end }}
     </div>
   </form>
-  {{ if .RecentStreamers }}
-  <div class="container d-flex flex-column gap-3 border rounded p-3 shadow">
-    <span>Continue</span>
-    {{ range .RecentStreamers }}
-    <a href="/watch/{{ . }}">{{ . }}</a>
-    {{ end }}
-  </div>
-  {{ end }}
 </div>

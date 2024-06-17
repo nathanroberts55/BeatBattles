@@ -31,7 +31,7 @@ type SoundcloudItem struct {
 func GetEmbed(link string) (*SoundcloudItem, error) {
 	client := &http.Client{}
 	scUrl := url.QueryEscape(link)
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://soundcloud.com/oembed?format=json&url=%s", scUrl), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://soundcloud.com/oembed?format=json&maxheight=166&url=%s", scUrl), nil)
 	if err != nil {
 		return nil, err
 	}

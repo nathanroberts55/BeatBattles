@@ -2,6 +2,7 @@ package cache
 
 import (
 	"encoding/json"
+
 	"github.com/nathanroberts55/beatbattle/soundcloud"
 	"github.com/redis/go-redis/v9"
 )
@@ -45,7 +46,7 @@ func (bucket *Bucket) lrange(start, end int64) (result []*soundcloud.SoundcloudI
 }
 
 func (bucket *Bucket) PullFromCursor(limit int64) (result []*soundcloud.SoundcloudItem, err error) {
-	result, err = bucket.lrange(bucket.cursor, bucket.cursor+limit)
+	result, err = bucket.lrange(bucket.cursor, bucket.cursor+limit-1)
 	if err != nil {
 		return result, err
 	}
@@ -60,7 +61,7 @@ func (bucket *Bucket) Push(sc *soundcloud.SoundcloudItem) error {
 		return err
 	}
 
-	return bucket.client.LPush(ctx, bucket.streamer, data).Err()
+	return bucket.client.RPush(ctx, bucket.streamer, data).Err()
 }
 
 func max(a, b int64) int64 {

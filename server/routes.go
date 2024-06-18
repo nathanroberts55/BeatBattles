@@ -11,8 +11,8 @@ import (
 func buildHandler(app *common.App, controller func(*common.Ctx) error) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return controller(&common.Ctx{
-			c,
-			app,
+			Ctx: c,
+			App: app,
 		})
 	}
 }

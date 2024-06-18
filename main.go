@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/nathanroberts55/beatbattle/common"
 	"github.com/nathanroberts55/beatbattle/initializers"
 	"github.com/nathanroberts55/beatbattle/server"
@@ -22,7 +24,7 @@ func main() {
 
 	// Setup App
 	server.RegisterRoutes(&app)
-	err := app.Server.Listen(":8080")
+	err := app.Server.Listen(os.Getenv("PORT"))
 	if err != nil {
 		panic(err)
 	}

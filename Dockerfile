@@ -11,5 +11,5 @@ FROM base AS production
 ENV PORT "8080"
 ENV REDIS_URL "redis://redis:6379/0"
 COPY --from=base /opt/app/app /usr/bin/beats
-CMD ["beats"]
+CMD /opt/beats
 

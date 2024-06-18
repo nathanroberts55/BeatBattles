@@ -4,6 +4,7 @@ services:
     image: nater55/jamsessions:latest
     container-name: jamsession-app
     restart: unless-stopped
+    command: ./beats
   redis:
     image: redis:7.2.4
     ports:

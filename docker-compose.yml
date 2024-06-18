@@ -1,10 +1,13 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
-        - .env.docker
+      - .env.docker
+    ports:
+      - 8080:8080
   redis:
     image: redis:7.2.4
     ports:
-     - 6379:6379
-
+      - 6379:6379

@@ -13,14 +13,15 @@
           </svg>
         </label>
         <div class="card-actions justify-end">
-          <button type="submit" class="btn btn-secondary">Join</button>
+          <button type="submit"
+            class="btn btn-primary text-white transition ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300">Join</button>
         </div>
       </div>
       {{ if .RecentStreamers }}
       <div class="flex flex-col mb-4 mx-auto gap-y-2 items-center">
         {{ range .RecentStreamers }}
-        <a class="btn btn-primary" href="/watch/{{ . }}">
-          <span>Continue</span>{{ . }}
+        <a class="btn btn-outline btn-primary hover:text-white" href="/watch/{{ . }}">
+          Continue {{ . }}
         </a>
         {{ end }}
       </div>

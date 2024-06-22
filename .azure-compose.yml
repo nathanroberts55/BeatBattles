@@ -5,8 +5,10 @@ services:
     container-name: jamsession-app
     restart: unless-stopped
     ports:
-      - 8080:80
+      - 80:80
     command: /opt/app/app
+    depends_on:
+      - redis
   redis:
     image: redis:7.2.4
     ports:

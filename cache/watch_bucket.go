@@ -2,7 +2,9 @@ package cache
 
 import (
 	"encoding/json"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/nathanroberts55/beatbattle/soundcloud"
 	"github.com/redis/go-redis/v9"
 )
@@ -14,14 +16,15 @@ type Bucket struct {
 	startCursor int64
 }
 
-func NewBucket(streamer string) *Bucket {
+func NewBucket() *Bucket {
 	bucket := &Bucket{
 		client:   redisClient(),
-		streamer: streamer,
+		streamer: uuid.NewString(),
 	}
 	latest := bucket.client.LLen(ctx, bucket.streamer).Val()
 	bucket.startCursor = latest
 	bucket.cursor = latest
+	bucket.client.Expire(ctx, bucket.streamer, time.Hour*4)
 
 	return bucket
 }
@@ -46,7 +49,7 @@ func (bucket *Bucket) lrange(start, end int64) (result []*soundcloud.SoundcloudI
 }
 
 func (bucket *Bucket) PullFromCursor(limit int64) (result []*soundcloud.SoundcloudItem, err error) {
-	result, err = bucket.lrange(bucket.cursor, bucket.cursor+limit-1)
+	result, err = bucket.lrange(bucket.cursor, bucket.cursor+limit)
 	if err != nil {
 		return result, err
 	}

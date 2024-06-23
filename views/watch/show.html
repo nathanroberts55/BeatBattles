@@ -1,4 +1,8 @@
-<div data-controller="song" data-song-streamer-value="{{ .Streamer }}" class="h-full w-full mx-auto">
-  <div id="messages" data-song-target="container" class=" flex flex-col h-full">
+<div data-controller="song" data-song-streamer-value="{{ .Streamer }}"
+  class="flex flex-col h-full w-full mx-auto justify-center">
+  <div id="messages" data-song-target="container" class="flex flex-col h-full">
+    <div id="loading-text" class="flex text-2xl text-display items-end mx-auto my-6">Waiting for Submissions<span
+        class="loading loading-dots loading-sm mx-1"></span>
+    </div>
   </div>
 </div>

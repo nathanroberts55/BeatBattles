@@ -59,7 +59,7 @@ func newListener(streamer string, bucket *cache.Bucket) *twitch.Listener {
 
 func subscribe(app *common.App, c *websocket.Conn) *cache.Bucket {
 	streamer := c.Params("streamer")
-	bucket := cache.NewBucket(streamer)
+	bucket := cache.NewBucket()
 	listener := newListener(streamer, bucket)
 	app.Twitch.JoinStreamer(listener)
 
@@ -104,7 +104,7 @@ func Watch(app *common.App, c *websocket.Conn) {
 			}
 
 			for _, v := range items {
-				log.Printf("%s: pulled %s\n", streamer, v.Id)
+				log.Printf("%s | %s: pulled %s\n", c.Cookies("SESSION_ID"), streamer, v.Id)
 				resp = append(resp, renderEmbed(v.Html))
 			}
 		}

@@ -16,15 +16,19 @@ type TwitchMessage struct {
 }
 
 func extractSong(message string) string {
-	re := regexp.MustCompile(`(https:\/\/)(|on\.)(soundcloud\.com)([^ \n]+)`)
-	match := re.FindString(message)
+	reSoundCloud := regexp.MustCompile(`(https:\/\/)(|on\.)(soundcloud\.com)([^ \n]+)`)
+	reSpotify := regexp.MustCompile(`(https:\/\/)(|open\.)(spotify\.com)([^ \n]+)`)
+	match := reSoundCloud.FindString(message)
+	if match == "" {
+		match = reSpotify.FindString(message)
+	}
 	return match
 }
 
 func (ts *TwitchService) handleMessage(message twitch.PrivateMessage) (*TwitchMessage, error) {
 	url := extractSong(message.Message)
 	if url == "" {
-		return nil, errors.New("no sound cloud link in message")
+		return nil, errors.New("no accepted music link in message")
 	}
 
 	log.Printf("Extacted URL: %s\n", url)

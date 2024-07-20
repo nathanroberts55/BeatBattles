@@ -29,14 +29,14 @@ func NewBucket() *Bucket {
 	return bucket
 }
 
-func (bucket *Bucket) lrange(start, end int64) (result []*soundcloud.SoundcloudItem, err error) {
+func (bucket *Bucket) lrange(start, end int64) (result []*soundcloud.EmbededPlayer, err error) {
 	res := bucket.client.LRange(ctx, bucket.streamer, start, end)
 	if err = res.Err(); err != nil {
 		return result, err
 	}
 
 	for _, v := range res.Val() {
-		var data soundcloud.SoundcloudItem
+		var data soundcloud.EmbededPlayer
 		err = json.Unmarshal([]byte(v), &data)
 		if err != nil {
 			return result, err
@@ -48,7 +48,7 @@ func (bucket *Bucket) lrange(start, end int64) (result []*soundcloud.SoundcloudI
 	return result, nil
 }
 
-func (bucket *Bucket) PullFromCursor(limit int64) (result []*soundcloud.SoundcloudItem, err error) {
+func (bucket *Bucket) PullFromCursor(limit int64) (result []*soundcloud.EmbededPlayer, err error) {
 	result, err = bucket.lrange(bucket.cursor, bucket.cursor+limit)
 	if err != nil {
 		return result, err
@@ -58,7 +58,7 @@ func (bucket *Bucket) PullFromCursor(limit int64) (result []*soundcloud.Soundclo
 	return result, err
 }
 
-func (bucket *Bucket) Push(sc *soundcloud.SoundcloudItem) error {
+func (bucket *Bucket) Push(sc *soundcloud.EmbededPlayer) error {
 	data, err := json.Marshal(sc)
 	if err != nil {
 		return err
@@ -78,15 +78,15 @@ func max(a, b int64) int64 {
 	return a
 }
 
-func (bucket *Bucket) getThusFar() ([]*soundcloud.SoundcloudItem, error) {
+func (bucket *Bucket) getThusFar() ([]*soundcloud.EmbededPlayer, error) {
 	if bucket.cursor == 0 {
-		return []*soundcloud.SoundcloudItem{}, nil
+		return []*soundcloud.EmbededPlayer{}, nil
 	}
 
 	return bucket.lrange(bucket.startCursor, max(bucket.cursor-1, 0))
 }
 
-func (bucket *Bucket) PullUnique(limit int64) (result []*soundcloud.SoundcloudItem, err error) {
+func (bucket *Bucket) PullUnique(limit int64) (result []*soundcloud.EmbededPlayer, err error) {
 	thusFar, err := bucket.getThusFar()
 	if err != nil {
 		return result, err

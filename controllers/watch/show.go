@@ -6,6 +6,7 @@ import (
 	"github.com/nathanroberts55/beatbattle/cache"
 	"github.com/nathanroberts55/beatbattle/common"
 	"github.com/nathanroberts55/beatbattle/controllers"
+	"regexp"
 )
 
 func remember(ctx *common.Ctx, streamer string) error {
@@ -36,8 +37,18 @@ type showProps struct {
 	Streamer string
 }
 
+func sanatize(streamer string) string {
+	regex := regexp.MustCompile("[^a-zA-Z0-9]+")
+	clean := regex.ReplaceAllString(streamer, "")
+	if len(clean) > 25 {
+		clean = clean[:25]
+	}
+
+	return clean
+}
+
 func Show(c *common.Ctx) error {
-	streamer := c.Params("streamer", "ttlnow")
+	streamer := sanatize(c.Params("streamer", "ttlnow"))
 	if err := remember(c, streamer); err != nil {
 		log.Printf("Failed to remember streamer\n%s\n", err)
 	}

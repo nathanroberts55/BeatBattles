@@ -1,11 +1,11 @@
 <div class="flex flex-col mx-auto justify-center items-center">
-  <form method="GET" action="/watch">
+  <form method="GET" action="/watch" data-controller="form">
     <div class="card bg-base-100 w-96 shadow-xl">
       <div class="card-body items-center text-center">
         <h2 class="card-title text-2xl mb-4">Tune In!</h2>
         <p class="font-bold">Enter Streamer Name</p>
         <label for="streamerName" class="input input-bordered flex items-center gap-2 mb-4 w-full max-w-xs">
-          <input type="text" name="streamer" placeholder="JustinTV" class="grow">
+          <input type="text" name="streamer" placeholder="JustinTV" class="grow" maxlength="25" required data-form-target="required">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
             <path fill-rule="evenodd"
               d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
@@ -13,7 +13,7 @@
           </svg>
         </label>
         <div class="card-actions justify-end">
-          <button type="submit"
+          <button type="submit" data-form-target="submit"
             class="btn btn-primary text-white transition ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300">Join</button>
         </div>
       </div>

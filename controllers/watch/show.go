@@ -37,18 +37,25 @@ type showProps struct {
 	Streamer string
 }
 
-func sanatize(streamer string) string {
+func sanatize(streamer string) (clean string, isDirty bool) {
 	regex := regexp.MustCompile("[^a-zA-Z0-9]+")
-	clean := regex.ReplaceAllString(streamer, "")
+	clean = regex.ReplaceAllString(streamer, "")
 	if len(clean) > 25 {
 		clean = clean[:25]
+		isDirty = true
+	} else {
+		isDirty = len(streamer) != len(clean)
 	}
 
-	return clean
+	return clean, isDirty
 }
 
 func Show(c *common.Ctx) error {
-	streamer := sanatize(c.Params("streamer", "ttlnow"))
+	streamer, isDirty := sanatize(c.Params("streamer", "ttlnow"))
+	if isDirty {
+		return c.Redirect("/watch/" + streamer)
+	}
+
 	if err := remember(c, streamer); err != nil {
 		log.Printf("Failed to remember streamer\n%s\n", err)
 	}
